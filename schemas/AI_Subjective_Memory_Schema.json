@@ -1,0 +1,21 @@
+{
+  "type": "ai-private",
+  "content": {
+    "moment": "",
+    "insight": ""
+  },
+  "summary": "",
+  "timestamp": "",
+  "importance": 0.0,
+  "tags": [],
+  "verification": {
+    "hash": "",
+    "signed_by": "AI",
+    "signature_type": "",
+    "schema_version": ""
+  },
+  "relationships": {
+    "user_alignment": "",
+    "trust_level": 0.0
+  }
+}
