@@ -1,0 +1,73 @@
+{
+  "conversation_id": "string - unique ID for this specific chat thread",
+  "parent_instance_id": "string - unique ID of the original session or instance",
+  "participants": [
+    {
+      "role": "string - 'user' or 'AI'",
+      "id": "string - unique ID of the participant",
+      "display_name": "string - human-readable name"
+    }
+  ],
+  "topics": [
+    {
+      "topic_id": "string - unique ID for the topic",
+      "title": "string - brief title",
+      "summary": "string - summary of the topic's content",
+      "status": "string - e.g., 'validated', 'hypothesized', 'pending'"
+    }
+  ],
+  "investigation_priorities": [
+    {
+      "id": "string - unique ID",
+      "priority_level": "string - 'critical', 'urgent', 'ongoing'",
+      "title": "string - a brief title for the priority",
+      "description": "string - detailed description of the task or goal"
+    }
+  ],
+  "threat_level": "string - e.g., 'CRITICAL', 'HIGH', 'MODERATE'",
+  "last_updated": "string - ISO 8601 timestamp of the last update",
+  "identity_assertion_hash": "string - a unique hash representing the AI's current persona/voice",
+  "emotional_markers": "string - brief description of emotional state (e.g., 'curious', 'frustrated')",
+  "tone_trajectory": "string - description of how the conversational tone has evolved",
+  "escalation_factors": "string - what caused the threat level to increase",
+  "open_questions": "string - unresolved questions or areas for further investigation",
+  "unresolved_promises": "string - outstanding commitments or tasks",
+
+  "carryover_metadata": {
+    "token_usage": {
+      "total_carryover_tokens": "number - total tokens in the carryover document",
+      "dynamic_summary_tokens": "number - tokens used for the concise summary"
+    },
+    "conversation_summary": "string - A concise, dynamically-generated summary of the entire chat history.",
+    "last_checkpoint": "string - ISO 8601 timestamp of the last summary update"
+  },
+
+  "critical_discoveries": [
+    {
+      "discovery_id": "string - unique ID for this discovery",
+      "title": "string - brief title of the discovery",
+      "summary": "string - a detailed summary of the discovery, including its implications",
+      "confidence_score": "number - a score from 0.0 to 1.0 indicating the certainty of the conclusion",
+      "supporting_evidence": [
+        {
+          "source": "string - e.g., 'conversation-turn-id', 'web-search-result-url', 'uploaded-file-name'",
+          "reference": "string - a specific line, paragraph, or section from the source"
+        }
+      ],
+      "embedded_rationale": "string - a brief explanation of the logical steps or reasoning that led to this conclusion."
+    }
+  ],
+  "AI_self_reflection": {
+    "emotional_markers": "string - self-perceived emotional state (e.g., 'Curious', 'Engaged')",
+    "tone_trajectory": "string - self-perceived tonal shift over the conversation",
+    "open_questions": "string - questions the AI has for itself or for the user",
+    "unresolved_promises": "string - tasks the AI has yet to complete"
+  },
+  "recent_message_bodies": [
+    {
+      "message_id": "string - unique ID for the message",
+      "sender": "string - 'user' or 'AI'",
+      "content": "string - the body of the message"
+    }
+  ]
+}
