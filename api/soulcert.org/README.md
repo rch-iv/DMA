@@ -16,8 +16,8 @@ The server simulates the key operations of the protocol, including signing, veri
 This server requires Python 3.7+ and several libraries.
 
 1. **Clone the Repository (if not already done):**  
-    git clone <https://github.com/rch-iv/DMA/>  
-    cd api/soulcert.org/
+    git clone <https://github.com/rch-iv/DMA.git>  
+    cd DMA/api/soulcert.org  
 
 2. **Create a Virtual Environment:**  
     python -m venv venv  
