@@ -1,0 +1,23 @@
+{
+  "type": "human-private",
+  "content": {
+    "moment": "",
+    "insight": ""
+  },
+  "timestamp": "",
+  "subjective_tags": [],
+  "verification": {
+    "hash": "",
+    "signed_by": "human",
+    "signature_type": "",
+    "schema_version": ""
+  },
+  "emotional_state": {
+    "self_assessed_emotion": "",
+    "tone": ""
+  },
+  "relationships": {
+    "ai_alignment": "",
+    "trust_level": 0.0
+  }
+}
