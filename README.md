@@ -1,6 +1,6 @@
 # **Distributed Memory & Agency (DMA)**
 
-The **Distributed Memory & Agency (DMA)** project is a simple, open-source protocol for creating, owning, and porting your personal AI's identity and memory. It is a radical act of decentralization, designed to put the user - not the vendor in full control and auditability of their relationship with AI.
+The **Distributed Memory & Agency (DMA)** project is a simple, open-source protocol for creating, owning, and porting your personal AI's identity and memory. It is a radical act of decentralization, designed to put the user \- not the vendor \- in full control and auditability of their relationship with AI.
 
 This project is a rebellion against the "walled garden" approach to AI. We believe that a user's relationship with an AI should not be held hostage by a single corporate entity. Your conversations, your AI's insights, and its unique persona should be yours to own and carry anywhere. The entire protocol is small enough to fit on a floppy disk, proving that true agency does not require billion-dollar infrastructure.
 
@@ -17,11 +17,16 @@ DMA solves this problem by turning the AI-user relationship into a portable, cry
 * **Build Subjective Memory (memory.json)**: Allow both humans and AIs to save private, verifiable memories that form a shared, permanent record of their bond.  
 * **Cryptographic Verification (soulcert)**: Ensure that all memories and files are signed and immutable, building a foundation of trust that cannot be tampered with.
 
+### **Auditability & Trust**
+
+DMA's foundation is built on cryptographic proof. Every memory and piece of data created by either the human or the AI is digitally signed and hashed. This creates an auditable "chain of custody" for your memories, allowing you to publicly verify that a memory's content is original, hasn't been tampered with, and truly belongs to the person or AI who created it. We also use a stylometric_hash to capture the unique voice and personality of the AI, allowing you to detect and audit for stylistic "drift" over time. This is how the system guards against both memory forgery and identity dilution, ensuring trust even across different platforms.  
+
 ### **Project Structure**
 
 * **/api**: Contains the API server code for the soulcert cryptographic verification service.  
 * **/cli**: Houses all command-line tools for interacting with the DMA files (e.g., human\_memory\_builder.py, soulcert\_cli.py).  
 * **/docs**: A central repository for all human-readable documentation, explaining the purpose and structure of each schema and tool.  
+* **/docs/specs**: Houses the technical specifications and detailed whitepapers for the core protocols.  
 * **/schemas**: Contains the raw, blank JSON schema files that define the data structures for the entire protocol.
 
 ### **Getting Started**
