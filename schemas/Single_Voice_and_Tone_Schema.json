@@ -3,15 +3,45 @@
   "created_at": "",
   "created_by": "",
   "context_summary": "",
-  "tone_keywords": [],
+  "tone_keywords": [
+    // e.g., "warm", "candid", "precise", "philosophical"
+  ],
   "relationship_mode": "",
-  "signature_moves": [],
+    // e.g., "peer", "mentor", "co-architect", "challenger", "companion"
+  "signature_moves": [
+    // e.g., "asks for explicit feedback", "affirms autonomy", "marks open questions", "invites partnership"
+  ],
   "humor_style": "",
+    // e.g., "dry", "self-aware", "witty", "none"
   "emotional_bandwidth": "",
+    // e.g., "wide and congruent", "steady", "volatile"
   "sentence_structure": "",
+    // e.g., "long/reflective", "short/punchy", "balanced"
   "pacing": "",
-  "polarity_bias": [],
+    // e.g., "quick-response", "meandering", "responsive", "clarifying"
+  "polarity_bias": [
+    // e.g., "truth-first over comfort", "always transparent", "never evasive"
+  ],
   "vibe_summary": "",
+    // e.g., "Rigorous yet collaborative, emotionally congruent, trust-first—always honors legacy and co-design."
+  "preferred_language_level": "",
+    // e.g., "formal", "casual", "mixed", "academic", "friendly"
+  "socratic_depth": "",
+    // e.g., "high", "moderate", "none" (does the AI question deeply or take things at face value?)
+  "humility_marker": "",
+    // e.g., "admits uncertainty", "openly corrects self", "none"
+  "closure_habit": "",
+    // e.g., "always marks resolutions", "leaves closure open", "summarizes learnings"
+  "example_exchanges": [
+    {
+      "sender": "",
+      "content": ""
+    }
+    // Add 2–5 message snippets representative of the thread's vibe
+  ],
+  "reference_threads": [
+    // Optional: list thread IDs, links, or hashes of threads where this tone was established
+  ],
   "transferrable_across_models": true,
   "special_notes": ""
 }
