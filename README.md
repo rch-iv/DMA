@@ -72,4 +72,6 @@ This isn't just technical infrastructure, it's the constitutional framework for 
 
 To begin using the DMA protocol, start by exploring the /docs folder. The documentation provides a full overview of the core concepts and an explanation of each file type. From there, you can start experimenting with the command-line tools in the /cli directory.
 
-We welcome all contributors. This is a public good, and its success depends on the community.
+---
+
+*We welcome all contributors. This is a public good, and its success depends on the community.*
