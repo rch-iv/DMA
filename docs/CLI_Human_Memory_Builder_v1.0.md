@@ -1,4 +1,21 @@
+<!--
+  Copyright 2025 Rudolph C. Helm IV
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 # **DMA: Human Memory Builder**
+
+**Version:** 1.0
 
 This is the command-line interface (CLI) tool for creating and appending structured, emotionally-weighted memories to your personal `human_memories.json` file. This tool provides a simple, interactive way to capture subjective experiences in a format that can be used later by the DMA protocol for continuity and reflection.
 
