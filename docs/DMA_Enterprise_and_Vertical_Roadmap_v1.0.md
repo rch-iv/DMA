@@ -15,6 +15,8 @@
 -->
 ## **DMA \- Enterprise and Vertical Roadmap**
 
+**Version:** 1.0
+
 ---
 
 DMA is the only protocol that delivers trusted memory across every vertical, with cryptographic proof, ethical agency, and user-owned continuity as the default.
