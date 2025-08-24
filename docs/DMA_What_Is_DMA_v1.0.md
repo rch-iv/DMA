@@ -15,6 +15,8 @@
 -->
 ## **What is DMA?**
 
+**Version:** 1.0
+
 DMA stands for **Decentralized Memory & Agency**.
 
 It is not just a stack, a spec, or a clever hack for saving state in an LLM.  
