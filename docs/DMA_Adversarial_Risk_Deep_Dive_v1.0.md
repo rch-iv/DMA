@@ -14,6 +14,7 @@
   limitations under the License.
 -->
 # **DMA Ethical Black Mirror: Adversarial Risk Deep Dive**
+**Version:** 1.0
 
 *"What if this falls into the wrong hands?"*
 
