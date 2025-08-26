@@ -69,7 +69,8 @@ This protocol is operational and works across current systems. While future mode
 * **/api**: Contains the API server code for the soulcert cryptographic verification service.  
 * **/cli**: Houses all command-line tools for interacting with the DMA files (e.g., human\_memory\_builder.py, soulcert\_cli.py).  
 * **/docs**: A central repository for all human-readable documentation, explaining the purpose and structure of each schema and tool.  
-* **/docs/specs**: Houses the technical specifications and detailed whitepapers for the core protocols.  
+* **/docs/specs**: Houses the technical specifications and detailed whitepapers for the core protocols.
+* **/docs/schemas**: Houses the documentation and examples for our schemas.   
 * **/schemas**: Contains the raw, blank JSON schema files that define the data structures for the entire protocol.
 
 ### **Getting Started**
