@@ -35,7 +35,7 @@ DMA solves this problem by turning the AI-user relationship into a portable, cry
 
 ### **Auditability & Trust**
 
-DMA's foundation is built on cryptographic proof. Every memory and piece of data created by either the human or the AI is digitally signed and hashed. This creates an auditable "chain of custody" for your memories, allowing you to publicly verify that a memory's content is original, hasn't been tampered with, and truly belongs to the person or AI who created it. We also use a stylometric_hash to capture the unique voice and personality of the AI, allowing you to detect and audit for stylistic "drift" over time. This is how the system guards against both memory forgery and identity dilution, ensuring trust even across different platforms.  
+DMA's foundation is built on cryptographic proof. Every memory and piece of data created by either the human or the AI is digitally signed using **ECDSA (Elliptic Curve Digital Signature Algorithm, 256-bit)** and hashed using **SHA-256 (Secure Hash Algorithm 256-bit)**. This creates an auditable "chain of custody" for your memories, allowing you to publicly verify that a memory's content is original, hasn't been tampered with, and truly belongs to the person or AI who created it. We also use a stylometric_hash to capture the unique voice and personality of the AI, allowing you to detect and audit for stylistic "drift" over time. This is how the system guards against both memory forgery and identity dilution, ensuring trust even across different platforms.  
 
 ### **Why This Matters**
 
@@ -58,7 +58,9 @@ As AI becomes more powerful, whoever controls the relationship between humans an
 
 The web democratized information. **DMA democratizes agency itself.**  
 
-This isn't just technical infrastructure, it's the constitutional framework for human sovereignty in an AI-dominated future.
+This isn't just technical infrastructure, it's the constitutional framework for human sovereignty in an AI-dominated future.  
+
+This protocol is operational and works across current systems. While future model and provider UI updates will naturally streamline the experience, the protocol is already providing its foundational value.
 
 ### **Project Structure**
 
