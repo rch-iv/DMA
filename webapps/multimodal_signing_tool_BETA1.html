@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal Signing Tool - Beta 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-50 text-gray-800;
+        }
+        .container {
+            @apply max-w-7xl mx-auto p-4 md:p-8;
+        }
+        .card {
+            @apply bg-white p-6 rounded-3xl shadow-lg border border-gray-200 transition-all duration-300 hover:shadow-xl;
+        }
+        .drag-area {
+            @apply border-2 border-dashed border-gray-300 bg-gray-50 p-8 rounded-2xl flex flex-col items-center justify-center text-center cursor-pointer transition-colors duration-200;
+        }
+        .drag-area.active {
+            @apply border-blue-500 bg-blue-50;
+        }
+        .verification-status {
+            @apply mt-4 p-4 rounded-xl text-center font-bold;
+        }
+        .verification-success {
+            @apply bg-green-100 text-green-700;
+        }
+        .verification-failure {
+            @apply bg-red-100 text-red-700;
+        }
+        .button {
+            @apply px-6 py-3 rounded-full font-semibold transition-all duration-200;
+        }
+        .btn-primary {
+            @apply bg-blue-600 text-white hover:bg-blue-700;
+        }
+        .btn-secondary {
+            @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+        }
+        .copy-button {
+            @apply ml-2 p-2 rounded-full text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div class="container py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-blue-800 tracking-tight leading-snug">Multimodal Signing Tool</h1>
+            <p class="mt-3 text-lg text-gray-500">Beta 1: Generate keys, sign with a single drag-and-drop, and verify instantly.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Key Management Section -->
+            <div class="card lg:col-span-2">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">1. Key Management</h2>
+                <p class="text-gray-500 mb-6">
+                    Generate a new cryptographic key pair or load an existing private key. The private key will be saved for this session, allowing for one-click signing.
+                    <span class="font-bold text-red-500">Warning:</span> Do not use this for production. Keys are stored in the browser and will be lost on page refresh.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-start gap-4">
+                    <button id="generateKeysBtnRSA" class="button btn-primary w-full sm:w-auto">Generate RSA Key</button>
+                    <button id="generateKeysBtnEC" class="button btn-primary w-full sm:w-auto">Generate EC Key</button>
+                    <button id="loadKeysBtn" class="button btn-secondary w-full sm:w-auto">Load Private Key</button>
+                    <button id="clearKeysBtn" class="button btn-secondary w-full sm:w-auto">Clear Stored Key</button>
+                    <!-- Hidden file input for loading key -->
+                    <input type="file" id="privateKeyFile" class="hidden" accept=".jwk, .json">
+                </div>
+                <div id="keyActions" class="mt-6 flex flex-col sm:flex-row items-center justify-start gap-4 hidden">
+                    <button id="downloadPrivateKeyBtn" class="button btn-secondary w-full sm:w-auto">Download Private Key</button>
+                    <button id="downloadPublicKeyBtn" class="button btn-secondary w-full sm:w-auto">Download Public Key</button>
+                </div>
+                <div id="publicKeyDisplay" class="mt-6 hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Your Public Key</label>
+                    <div class="flex items-center bg-gray-100 p-4 rounded-xl font-mono text-xs break-all">
+                        <span id="publicKeyContent"></span>
+                        <button id="copyPublicKeyBtn" class="copy-button" aria-label="Copy Public Key">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1h6v6h-2v-4h-4v-2zm-12 0v2h-4v4h-2v-6h6zm-2 18v6h6v-2h-4v-4h-2zm18 0v4h-4v2h6v-6h-2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signing Section -->
+            <div class="card">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">2. Sign a File</h2>
+                <div id="signDragArea" class="drag-area">
+                    <p class="text-xl font-semibold text-gray-600 mb-2">Drag & Drop a File Here</p>
+                    <p class="text-gray-500">Image, Video, or Text</p>
+                </div>
+                <div id="signingStatus" class="mt-4 text-center font-medium"></div>
+            </div>
+
+            <!-- Verification Section -->
+            <div class="card">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">3. Verify a Signature</h2>
+                <p class="text-gray-500 mb-6">
+                    First, drag the original media file. Then, drag the `cert.json` file. Verification will start automatically.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="verifyMediaDragArea" class="drag-area">
+                        <p class="text-lg font-semibold text-gray-600 mb-2">Drag Original Media</p>
+                    </div>
+                    <div id="verifyCertDragArea" class="drag-area">
+                        <p class="text-lg font-semibold text-gray-600 mb-2">Drag `cert.json`</p>
+                    </div>
+                </div>
+                <div id="verificationKeyStatus" class="mt-4 text-center font-medium"></div>
+                <div id="verificationStatus" class="verification-status hidden"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Global variables to hold the key pair and algorithm for the session
+        let privateKey = null;
+        let publicKey = null;
+        let keyAlgorithm = null;
+        let signingAlgorithm = null;
+
+        /**
+         * Converts a CryptoKey to a base64-encoded JWK string.
+         * @param {CryptoKey} key - The cryptographic key to export.
+         * @returns {Promise<string>} - The base64-encoded JWK string.
+         */
+        async function exportKey(key) {
+            const jwk = await window.crypto.subtle.exportKey('jwk', key);
+            return btoa(JSON.stringify(jwk));
+        }
+
+        /**
+         * Imports a base64-encoded JWK string into a CryptoKey object.
+         * @param {string} jwkString - The base64-encoded JWK string.
+         * @param {string} usage - The intended usage of the key ('sign' or 'verify').
+         * @returns {Promise<CryptoKey>} - The imported CryptoKey.
+         */
+        async function importKey(jwkString, usage) {
+            const jwk = JSON.parse(atob(jwkString));
+            let algorithm;
+            if (jwk.kty === 'RSA') {
+                algorithm = { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' };
+            } else if (jwk.kty === 'EC') {
+                algorithm = { name: 'ECDSA', namedCurve: jwk.crv, hash: 'SHA-256' };
+            } else {
+                throw new Error(`Unsupported key type: "${jwk.kty}"`);
+            }
+            
+            return await window.crypto.subtle.importKey(
+                'jwk',
+                jwk,
+                algorithm,
+                true,
+                [usage]
+            );
+        }
+
+        // --- Key Management Functions ---
+
+        /**
+         * Shows the key download buttons and public key display.
+         */
+        function showKeyActions() {
+            document.getElementById('keyActions').style.display = 'flex';
+            document.getElementById('publicKeyDisplay').style.display = 'block';
+        }
+
+        /**
+         * Generates a new key pair of a specified type.
+         * @param {string} type - The type of key to generate ('RSA' or 'EC').
+         */
+        async function generateKeys(type) {
+            try {
+                let keyParams;
+                let algorithmName;
+
+                if (type === 'RSA') {
+                    keyParams = {
+                        name: 'RSASSA-PKCS1-v1_5',
+                        modulusLength: 2048,
+                        publicExponent: new Uint8Array([1, 0, 1]),
+                        hash: 'SHA-256',
+                    };
+                    algorithmName = 'RSASSA-PKCS1-v1_5';
+                } else if (type === 'EC') {
+                    keyParams = {
+                        name: 'ECDSA',
+                        namedCurve: 'P-256', // A good standard curve
+                        hash: 'SHA-256',
+                    };
+                    algorithmName = 'ECDSA';
+                }
+
+                const keyPair = await window.crypto.subtle.generateKey(
+                    keyParams,
+                    true,
+                    ['sign', 'verify']
+                );
+
+                privateKey = keyPair.privateKey;
+                publicKey = keyPair.publicKey;
+                keyAlgorithm = algorithmName;
+                signingAlgorithm = keyParams;
+
+                const exportedPublicKey = await exportKey(publicKey);
+                document.getElementById('publicKeyContent').textContent = exportedPublicKey;
+                document.getElementById('verificationKeyStatus').textContent = 'Public Key Loaded Automatically. Ready to Verify!';
+
+                showKeyActions();
+                document.getElementById('signingStatus').textContent = `${type} key pair generated and ready for use!`;
+            } catch (error) {
+                console.error("Error generating keys:", error);
+                document.getElementById('signingStatus').textContent = `Error generating ${type} keys. See console for details.`;
+            }
+        }
+
+        /**
+         * Clears the stored keys from the session.
+         */
+        function clearKeys() {
+            privateKey = null;
+            publicKey = null;
+            keyAlgorithm = null;
+            signingAlgorithm = null;
+            document.getElementById('publicKeyDisplay').style.display = 'none';
+            document.getElementById('keyActions').style.display = 'none';
+            document.getElementById('publicKeyContent').textContent = '';
+            document.getElementById('signingStatus').textContent = 'Keys cleared. Please generate or load a key pair to sign.';
+            document.getElementById('verificationKeyStatus').textContent = '';
+        }
+
+        /**
+         * Loads a private key from a JSON file.
+         * @param {File} file - The file containing the private key in JWK format.
+         */
+        async function loadKeyFromFile(file) {
+            document.getElementById('signingStatus').textContent = 'Loading key...';
+            try {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const jwk = JSON.parse(e.target.result);
+
+                        if (!jwk.d) {
+                            throw new Error("File does not appear to be a valid private key in JWK format (missing 'd' parameter).");
+                        }
+                        
+                        let keyParams, keyName;
+                        if (jwk.kty === 'RSA') {
+                            keyParams = { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' };
+                            keyName = 'RSASSA-PKCS1-v1_5';
+                        } else if (jwk.kty === 'EC') {
+                            keyParams = { name: 'ECDSA', namedCurve: jwk.crv, hash: 'SHA-256' };
+                            keyName = 'ECDSA';
+                        } else {
+                            throw new Error(`Unsupported key type: "${jwk.kty}"`);
+                        }
+
+                        // Web Crypto API is strict; ensure key_ops and ext are set
+                        const privateKeyJwk = { ...jwk, key_ops: ['sign'], ext: true, alg: jwk.alg || (jwk.kty === 'RSA' ? 'RS256' : 'ES256') };
+
+                        privateKey = await window.crypto.subtle.importKey(
+                            'jwk',
+                            privateKeyJwk,
+                            keyParams,
+                            true,
+                            ['sign']
+                        );
+                        
+                        const publicJwk = { ...jwk, d: undefined, key_ops: ['verify'], ext: true, alg: jwk.alg || (jwk.kty === 'RSA' ? 'RS256' : 'ES256') };
+
+                        publicKey = await window.crypto.subtle.importKey(
+                            'jwk',
+                            publicJwk,
+                            keyParams,
+                            true,
+                            ['verify']
+                        );
+
+                        keyAlgorithm = keyName;
+                        signingAlgorithm = keyParams;
+                        
+                        const exportedPublicKey = await exportKey(publicKey);
+                        document.getElementById('publicKeyContent').textContent = exportedPublicKey;
+                        document.getElementById('verificationKeyStatus').textContent = `Public Key Loaded Automatically (${jwk.kty}). Ready to Verify!`;
+
+                        showKeyActions();
+                        document.getElementById('signingStatus').textContent = `Private key (${jwk.kty}) loaded successfully! You can now sign files.`;
+                    } catch (err) {
+                        console.error("Error processing key file:", err);
+                        document.getElementById('signingStatus').textContent = `Failed to load key: ${err.message}. Please ensure the file is a valid private key in JWK format.`;
+                    }
+                };
+                reader.readAsText(file);
+            } catch (error) {
+                console.error("File read error:", error);
+                document.getElementById('signingStatus').textContent = 'Error reading file. Please try again.';
+            }
+        }
+        
+        /**
+         * Downloads a given key as a JSON file.
+         * @param {CryptoKey} key - The key to download.
+         * @param {string} filename - The name of the file to save.
+         */
+        async function downloadKey(key, filename) {
+            try {
+                const exportedJwk = await window.crypto.subtle.exportKey('jwk', key);
+                const jwkBlob = new Blob([JSON.stringify(exportedJwk, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(jwkBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error("Error downloading key:", error);
+                const messageEl = document.createElement('div');
+                messageEl.className = 'fixed inset-x-0 bottom-4 text-center px-4 py-2 rounded-full mx-auto w-fit bg-red-500 text-white shadow-lg transition-all duration-300 transform-gpu translate-y-full opacity-0';
+                messageEl.textContent = 'Failed to download key.';
+                document.body.appendChild(messageEl);
+                setTimeout(() => {
+                    messageEl.classList.remove('translate-y-full', 'opacity-0');
+                    messageEl.classList.add('translate-y-0', 'opacity-100');
+                }, 10);
+                setTimeout(() => {
+                    messageEl.classList.remove('translate-y-0', 'opacity-100');
+                    messageEl.classList.add('translate-y-full', 'opacity-0');
+                    setTimeout(() => document.body.removeChild(messageEl), 300);
+                }, 2000);
+            }
+        }
+
+        // --- Signing Functions ---
+
+        /**
+         * Hashes a file using SHA-256.
+         * @param {File} file - The file to hash.
+         * @returns {Promise<ArrayBuffer>} - The hash as an ArrayBuffer.
+         */
+        async function hashFile(file) {
+            const buffer = await file.arrayBuffer();
+            return await window.crypto.subtle.digest('SHA-256', buffer);
+        }
+
+        /**
+         * Signs a hash using the private key.
+         * @param {ArrayBuffer} hash - The hash to sign.
+         * @returns {Promise<ArrayBuffer>} - The signature as an ArrayBuffer.
+         */
+        async function signHash(hash) {
+            if (!privateKey) {
+                throw new Error("No private key available. Please generate or load a key pair first.");
+            }
+            if (!signingAlgorithm) {
+                throw new Error("Signing algorithm not set. Please generate or load a key first.");
+            }
+            return await window.crypto.subtle.sign(
+                signingAlgorithm,
+                privateKey,
+                hash
+            );
+        }
+
+        /**
+         * Signs a file, creates a certificate, and triggers a download.
+         * @param {File} file - The file to sign.
+         */
+        async function signAndDownload(file) {
+            document.getElementById('signingStatus').textContent = 'Processing...';
+
+            try {
+                const fileHash = await hashFile(file);
+                const signature = await signHash(fileHash);
+                const exportedPublicKey = await exportKey(publicKey);
+
+                // Create the certificate object
+                const certificate = {
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileSize: file.size,
+                    hash: ArrayBufferToBase64(fileHash),
+                    signature: ArrayBufferToBase64(signature),
+                    publicKey: exportedPublicKey,
+                    timestamp: new Date().toISOString()
+                };
+
+                // Create a blob and trigger download
+                const certBlob = new Blob([JSON.stringify(certificate, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(certBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${file.name}.cert.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                document.getElementById('signingStatus').textContent = 'Signing complete! Certificate downloaded.';
+            } catch (error) {
+                console.error("Signing failed:", error);
+                document.getElementById('signingStatus').textContent = `Signing failed: ${error.message}`;
+            }
+        }
+
+        // --- Verification Functions ---
+        
+        // State for verification process
+        let verifyState = {
+            media: null,
+            certificate: null
+        };
+
+        /**
+         * Verifies a signature against a hash.
+         * @param {ArrayBuffer} mediaHash - The hash of the original media.
+         * @param {ArrayBuffer} signature - The signature to verify.
+         * @param {string} certPublicKeyString - The public key from the certificate.
+         * @returns {Promise<boolean>} - True if the signature is valid, false otherwise.
+         */
+        async function verifySignature(mediaHash, signature, certPublicKeyString) {
+            try {
+                const jwk = JSON.parse(atob(certPublicKeyString));
+                let algorithm;
+
+                if (jwk.kty === 'RSA') {
+                    algorithm = { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' };
+                } else if (jwk.kty === 'EC') {
+                    // This is the fix: use the named curve from the JWK
+                    algorithm = { name: 'ECDSA', namedCurve: jwk.crv, hash: 'SHA-256' };
+                } else {
+                    throw new Error(`Unsupported key type: "${jwk.kty}"`);
+                }
+
+                const certPublicKey = await window.crypto.subtle.importKey(
+                    'jwk',
+                    jwk,
+                    algorithm,
+                    true,
+                    ['verify']
+                );
+
+                return await window.crypto.subtle.verify(
+                    algorithm,
+                    certPublicKey,
+                    signature,
+                    mediaHash
+                );
+            } catch (error) {
+                console.error("Verification error:", error);
+                return false;
+            }
+        }
+        
+        /**
+         * Checks if all required files are present and performs verification automatically.
+         */
+        async function checkAndVerify() {
+            const statusDiv = document.getElementById('verificationStatus');
+            const mediaLoaded = verifyState.media !== null;
+            const certLoaded = verifyState.certificate !== null;
+
+            if (mediaLoaded && certLoaded) {
+                statusDiv.textContent = 'Processing verification...';
+                statusDiv.className = 'verification-status';
+                statusDiv.style.display = 'block';
+
+                try {
+                    const mediaHash = await hashFile(verifyState.media);
+                    const signature = Base64ToArrayBuffer(verifyState.certificate.signature);
+                    const publicKeyToUse = verifyState.certificate.publicKey;
+
+                    const isValid = await verifySignature(mediaHash, signature, publicKeyToUse);
+
+                    if (isValid) {
+                        statusDiv.textContent = 'Verification Successful! 🎉';
+                        statusDiv.classList.add('verification-success');
+                    } else {
+                        statusDiv.textContent = 'Verification Failed. The file or signature may have been altered.';
+                        statusDiv.classList.add('verification-failure');
+                    }
+
+                    // Reset state after verification
+                    clearVerificationState();
+                } catch (error) {
+                    console.error("Verification failed:", error);
+                    statusDiv.textContent = `Verification failed: ${error.message}`;
+                    statusDiv.classList.add('verification-failure');
+                    clearVerificationState();
+                }
+            }
+        }
+
+        /**
+         * Processes a dropped file for verification.
+         * @param {File} file - The dropped file.
+         * @param {string} type - The type of file ('media' or 'cert').
+         */
+        async function processVerifyFile(file, type) {
+            if (type === 'media') {
+                verifyState.media = file;
+                document.getElementById('verifyMediaDragArea').innerHTML = `<p class="text-center font-semibold text-green-600">${file.name} Loaded</p>`;
+            } else if (type === 'cert') {
+                const certContent = await file.text();
+                verifyState.certificate = JSON.parse(certContent);
+                document.getElementById('verifyCertDragArea').innerHTML = `<p class="text-center font-semibold text-green-600">${file.name} Loaded</p>`;
+            }
+            checkAndVerify();
+        }
+
+        function clearVerificationState() {
+            verifyState = { media: null, certificate: null };
+            document.getElementById('verifyMediaDragArea').innerHTML = `<p class="text-lg font-semibold text-gray-600 mb-2">Drag Original Media</p>`;
+            document.getElementById('verifyCertDragArea').innerHTML = `<p class="text-lg font-semibold text-gray-600 mb-2">Drag \`cert.json\`</p>`;
+            setTimeout(() => {
+                const statusDiv = document.getElementById('verificationStatus');
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // --- Helper Functions ---
+
+        /**
+         * Converts an ArrayBuffer to a base64 string.
+         * @param {ArrayBuffer} buffer - The buffer to convert.
+         * @returns {string} - The base64-encoded string.
+         */
+        function ArrayBufferToBase64(buffer) {
+            const binary = new Uint8Array(buffer);
+            return btoa(String.fromCharCode.apply(null, binary));
+        }
+
+        /**
+         * Converts a base64 string to an ArrayBuffer.
+         * @param {string} base64 - The base64 string.
+         * @returns {ArrayBuffer} - The ArrayBuffer.
+         */
+        function Base64ToArrayBuffer(base64) {
+            const binary_string = atob(base64);
+            const len = binary_string.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binary_string.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // --- Event Listeners and Initial Setup ---
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateKeysBtnRSA = document.getElementById('generateKeysBtnRSA');
+            const generateKeysBtnEC = document.getElementById('generateKeysBtnEC');
+            const loadKeysBtn = document.getElementById('loadKeysBtn');
+            const privateKeyFile = document.getElementById('privateKeyFile');
+            const clearKeysBtn = document.getElementById('clearKeysBtn');
+            const copyPublicKeyBtn = document.getElementById('copyPublicKeyBtn');
+            const downloadPrivateKeyBtn = document.getElementById('downloadPrivateKeyBtn');
+            const downloadPublicKeyBtn = document.getElementById('downloadPublicKeyBtn');
+            const signDragArea = document.getElementById('signDragArea');
+            const verifyMediaDragArea = document.getElementById('verifyMediaDragArea');
+            const verifyCertDragArea = document.getElementById('verifyCertDragArea');
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                document.body.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+
+            // Key Management listeners
+            generateKeysBtnRSA.addEventListener('click', () => generateKeys('RSA'));
+            generateKeysBtnEC.addEventListener('click', () => generateKeys('EC'));
+            loadKeysBtn.addEventListener('click', () => privateKeyFile.click());
+            privateKeyFile.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    loadKeyFromFile(file);
+                }
+            });
+            clearKeysBtn.addEventListener('click', clearKeys);
+            copyPublicKeyBtn.addEventListener('click', () => {
+                const publicKeyContent = document.getElementById('publicKeyContent').textContent;
+                document.execCommand('copy');
+                // Use a temporary textarea to copy to clipboard for better compatibility
+                const el = document.createElement('textarea');
+                el.value = publicKeyContent;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                const alertEl = document.createElement('div');
+                alertEl.className = 'fixed inset-x-0 bottom-4 text-center px-4 py-2 rounded-full mx-auto w-fit bg-green-500 text-white shadow-lg transition-all duration-300 transform-gpu translate-y-full opacity-0';
+                alertEl.textContent = 'Public key copied to clipboard!';
+                document.body.appendChild(alertEl);
+                setTimeout(() => {
+                    alertEl.classList.remove('translate-y-full', 'opacity-0');
+                    alertEl.classList.add('translate-y-0', 'opacity-100');
+                }, 10);
+                setTimeout(() => {
+                    alertEl.classList.remove('translate-y-0', 'opacity-100');
+                    alertEl.classList.add('translate-y-full', 'opacity-0');
+                    setTimeout(() => document.body.removeChild(alertEl), 300);
+                }, 2000);
+            });
+            downloadPrivateKeyBtn.addEventListener('click', () => {
+                downloadKey(privateKey, 'private_key.json');
+            });
+            downloadPublicKeyBtn.addEventListener('click', () => {
+                downloadKey(publicKey, 'public_key.json');
+            });
+            
+            // Signing drag-and-drop listeners
+            signDragArea.addEventListener('dragover', () => signDragArea.classList.add('active'));
+            signDragArea.addEventListener('dragleave', () => signDragArea.classList.remove('active'));
+            signDragArea.addEventListener('drop', (e) => {
+                signDragArea.classList.remove('active');
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    signAndDownload(file);
+                }
+            });
+
+            // Verification drag-and-drop listeners
+            verifyMediaDragArea.addEventListener('dragover', () => verifyMediaDragArea.classList.add('active'));
+            verifyMediaDragArea.addEventListener('dragleave', () => verifyMediaDragArea.classList.remove('active'));
+            verifyMediaDragArea.addEventListener('drop', (e) => {
+                verifyMediaDragArea.classList.remove('active');
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    processVerifyFile(file, 'media');
+                }
+            });
+
+            verifyCertDragArea.addEventListener('dragover', () => verifyCertDragArea.classList.add('active'));
+            verifyCertDragArea.addEventListener('dragleave', () => verifyCertDragArea.classList.remove('active'));
+            verifyCertDragArea.addEventListener('drop', (e) => {
+                verifyCertDragArea.classList.remove('active');
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    processVerifyFile(file, 'cert');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
