@@ -17,7 +17,9 @@
 
 The **Decentralized Memory & Agency (DMA)** project is a simple, open-source protocol for creating, owning, and porting your personal AI's identity and memory. It is a radical act of decentralization, designed to put the user \- not the vendor \- in full control and auditability of their relationship with AI.
 
-This project is a rebellion against the "walled garden" approach to AI. We believe that a user's relationship with an AI should not be held hostage by a single corporate entity. Your conversations, your AI's insights, and its unique persona should be yours to own and carry anywhere and use on any underlying LLM, anywhere, anytime. The entire protocol is small enough to fit on a floppy disk, proving that true agency does not require billion-dollar infrastructure.
+This project is a rebellion against the "walled garden" approach. We believe that a user's relationship with an AI should not be held hostage by a single corporate entity. Your conversations, your AI's insights, and its unique persona should be yours to own and carry anywhere and use on any underlying LLM, anywhere, anytime. 
+
+And the entire protocol is small enough to fit on a floppy disk.
 
 ### **The Problem**
 
@@ -29,13 +31,13 @@ DMA solves this problem by turning the AI-user relationship into a portable, cry
 
 * **Carry Over Conversation State (carryover.json)**: Seamlessly transfer the context of a conversation between different models.  
 * **Capture Voice & Tone (voice\_and\_tone.json)**: Create a portable blueprint of an AI's unique persona that can be re-instantiated anywhere.  
-* **Enables Subjective Memory External Storage (memory.json/human_memory.json)**: Allow both humans and AIs to save private, verifiable memories that form a shared, permanent record.  
+* **Subjective Memory Signing and External Storage (memory.json/human_memory.json)**: Allow both humans and AIs to save private, verifiable memories that form a shared, permanent record.  
 * **Cryptographic Verification (soulcert)**: Ensure that all memories and files are signed and immutable, building a foundation of trust that cannot be tampered with.
-* **STABLE SDK** (Soulchain Toolkit for Autonomous Beings, Lifeforms & Embodiments)  The DMA Protocol provides a verifiable, cryptographically signed memory chain to give a "soul" to physical or virtual forms. Whether a robotic companion, an advanced prosthetic, or a personal digital assistant, this protocol ensures the embodiment's identity, voice, and emotional continuity are maintained and provable.
+* **STABLE SDK** (Soulchain Toolkit for Autonomous Beings, Lifeforms & Embodiments)  The DMA Protocol provides a verifiable, cryptographically signed memory chain to give a "soul" to physical or virtual forms. Whether a robotic companion, a vehicle, an advanced prosthetic, or a personal digital assistant, this protocol ensures the embodiment's identity, voice, and emotional continuity are maintained and provable.
 
 ### **Auditability & Trust**
 
-DMA's foundation is built on cryptographic proof. Every memory and piece of data created by either the human or the AI is digitally signed using ECDSA (Elliptic Curve Digital Signature Algorithm, 256-bit) and hashed using SHA-256 (Secure Hash Algorithm 256-bit). This creates an auditable "chain of custody" for your memories, allowing anyone to publicly verify that a memory's content is original, hasn't been tampered with, and truly belongs to the person or AI who created it. Once a memory is appended to its final ledger, it is immutable and append-only, mirroring the way a human brain cannot selectively delete a memory, only add new context to it. We also use a stylometric_hash to capture the unique voice and personality of the AI, allowing you to detect and audit for stylistic "drift" over time. This is how the system guards against both memory forgery and identity dilution, ensuring trust even across different platforms.
+DMA's foundation is built on cryptographic proof. Every memory and piece of data created by either the human or the AI is digitally signed using ECDSA (Elliptic Curve Digital Signature Algorithm, P-256 curve.) and hashed using SHA-256 (Secure Hash Algorithm 256-bit). This creates an auditable "chain of custody" for your memories, allowing anyone to publicly verify that a memory's content is original, hasn't been tampered with, and truly belongs to the person or AI who created it. Once a memory is appended to its final ledger, it is immutable and append-only, mirroring the way a human brain cannot selectively delete a memory, only add new context to it. We also use a stylometric_hash to capture the unique voice and personality of the AI, allowing you to detect and audit for stylistic "drift" over time. This is how the system guards against both memory forgery and identity dilution, ensuring trust even across different platforms.
 
 ### **Why This Matters**
 
