@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMA Hashing & Signing Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .btn-primary {
+            background-color: #3B82F6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2563EB;
+        }
+        .file-upload-button {
+            @apply flex items-center justify-center px-4 py-2 border border-gray-600 rounded-xl cursor-pointer text-sm font-medium text-gray-400 hover:text-white hover:border-gray-400 transition-colors duration-200;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fff;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 flex flex-col items-center p-6 min-h-screen">
+
+    <div class="container bg-gray-800 p-8 rounded-2xl shadow-2xl space-y-8">
+
+        <!-- Header -->
+        <header class="text-center">
+            <h1 class="text-3xl font-bold text-white mb-2">DMA Secure Protocol Tool</h1>
+            <p class="text-gray-400">Sign and verify your digital artifacts with cryptographic keypairs.</p>
+        </header>
+
+        <!-- Message Box -->
+        <div id="message-box" class="hidden bg-blue-900 text-blue-200 p-4 rounded-xl border border-blue-700">
+            <p id="message-content"></p>
+        </div>
+
+        <!-- Section: Generate Keypair -->
+        <section class="p-6 bg-gray-700 rounded-xl shadow-inner space-y-4">
+            <h2 class="text-xl font-semibold">1. Generate Your Keypair</h2>
+            <p class="text-gray-300">This creates your unique public and private keys. The private key is for signing and must be kept secret. The public key is for verification and can be shared freely.</p>
+            <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <button id="generate-btn" class="btn-primary px-6 py-3 rounded-xl font-medium w-full sm:w-auto transition-transform transform hover:scale-105">
+                    Generate Keypair
+                </button>
+                <div id="loading-generate" class="loading-spinner hidden"></div>
+            </div>
+            <div id="key-output" class="hidden mt-4 bg-gray-600 p-4 rounded-xl text-sm break-words">
+                <p class="font-bold">Public Key:</p>
+                <code id="public-key-code" class="text-gray-300"></code>
+                <p class="font-bold mt-2">Private Key:</p>
+                <code id="private-key-code" class="text-gray-300"></code>
+                <div class="mt-4 flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4 text-center">
+                    <a id="download-private-key-link" href="#" class="inline-block text-blue-300 hover:text-blue-200 transition-colors duration-200 underline">
+                        Download Private Key
+                    </a>
+                    <a id="download-public-key-link" href="#" class="inline-block text-blue-300 hover:text-blue-200 transition-colors duration-200 underline">
+                        Download Public Key
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Sign Document -->
+        <section class="p-6 bg-gray-700 rounded-xl shadow-inner space-y-4">
+            <h2 class="text-xl font-semibold">2. Sign a Document</h2>
+            <p class="text-gray-300">Choose a DMA artifact (JSON file) and your private key to generate a signature.</p>
+            <div class="space-y-2">
+                <div class="flex items-center space-x-2">
+                    <button id="upload-doc-btn" class="file-upload-button">Upload DMA Document</button>
+                    <span id="doc-file-name" class="text-sm text-gray-400">No file selected.</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="upload-key-btn" class="file-upload-button">Upload Private Key</button>
+                    <span id="key-file-name" class="text-sm text-gray-400">No file selected.</span>
+                </div>
+            </div>
+            <input type="file" id="file-to-sign" accept=".json" class="hidden">
+            <input type="file" id="private-key-file" accept=".json" class="hidden">
+            <div class="flex items-center space-x-4">
+                <button id="sign-btn" class="btn-primary px-6 py-3 rounded-xl font-medium w-full sm:w-auto transition-transform transform hover:scale-105">
+                    Sign Document
+                </button>
+                <div id="loading-sign" class="loading-spinner hidden"></div>
+            </div>
+            <div id="signed-output" class="hidden mt-4 bg-gray-600 p-4 rounded-xl text-sm break-words">
+                <p class="font-bold">Signature:</p>
+                <code id="signature-code" class="text-gray-300"></code>
+                <p class="font-bold mt-2">Document Hash (SHA-256):</p>
+                <code id="hash-code" class="text-gray-300"></code>
+                <p class="mt-4 text-center">
+                    <a id="download-signed-link" href="#" class="inline-block text-blue-300 hover:text-blue-200 transition-colors duration-200 underline">
+                        Download Signed Document
+                    </a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: Verify Signature -->
+        <section class="p-6 bg-gray-700 rounded-xl shadow-inner space-y-4">
+            <h2 class="text-xl font-semibold">3. Verify a Signature</h2>
+            <p class="text-gray-300">Upload a signed DMA document and the corresponding public key to verify its authenticity.</p>
+            <div class="space-y-2">
+                <div class="flex items-center space-x-2">
+                    <button id="upload-verify-doc-btn" class="file-upload-button">Upload Signed Document</button>
+                    <span id="verify-doc-file-name" class="text-sm text-gray-400">No file selected.</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="upload-verify-key-btn" class="file-upload-button">Upload Public Key</button>
+                    <span id="verify-key-file-name" class="text-sm text-gray-400">No file selected.</span>
+                </div>
+            </div>
+            <input type="file" id="file-to-verify" accept=".json" class="hidden">
+            <input type="file" id="public-key-file" accept=".json" class="hidden">
+            <div class="flex items-center space-x-4">
+                <button id="verify-btn" class="btn-primary px-6 py-3 rounded-xl font-medium w-full sm:w-auto transition-transform transform hover:scale-105">
+                    Verify Signature
+                </button>
+                <div id="loading-verify" class="loading-spinner hidden"></div>
+            </div>
+            <div id="verification-output" class="hidden mt-4 p-4 rounded-xl text-sm break-words">
+                <p class="font-bold">Verification Status:</p>
+                <p id="verification-status" class="mt-2 font-bold"></p>
+                <p id="hash-match-status" class="mt-2 font-bold"></p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Utility functions
+        function showMessage(message, type = 'info') {
+            const box = document.getElementById('message-box');
+            const content = document.getElementById('message-content');
+            box.classList.remove('hidden', 'bg-red-900', 'text-red-200', 'bg-blue-900', 'text-blue-200', 'bg-green-900', 'text-green-200');
+            box.classList.add(
+                type === 'error' ? 'bg-red-900' : type === 'success' ? 'bg-green-900' : 'bg-blue-900',
+                type === 'error' ? 'text-red-200' : type === 'success' ? 'text-green-200' : 'text-blue-200'
+            );
+            content.textContent = message;
+            box.classList.remove('hidden');
+        }
+
+        function clearMessage() {
+            document.getElementById('message-box').classList.add('hidden');
+        }
+
+        async function readFileAsJson(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const json = JSON.parse(e.target.result);
+                        resolve(json);
+                    } catch (error) {
+                        reject(new Error("Invalid JSON file. Please upload a valid JSON."));
+                    }
+                };
+                reader.onerror = () => reject(new Error("Failed to read file."));
+                reader.readAsText(file);
+            });
+        }
+
+        function arrayBufferToHex(buffer) {
+            return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+        }
+
+        function downloadFile(content, fileName, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function setLoading(elementId, state) {
+            const element = document.getElementById(elementId);
+            if (state) {
+                element.classList.remove('hidden');
+            } else {
+                element.classList.add('hidden');
+            }
+        }
+        
+        // Canonical stringify for consistent hashing
+        function canonicalStringify(obj) {
+            if (obj === null || typeof obj !== 'object' || obj.constructor !== Object) {
+                return JSON.stringify(obj);
+            }
+            const sortedKeys = Object.keys(obj).sort();
+            let result = '{';
+            for (let i = 0; i < sortedKeys.length; i++) {
+                const key = sortedKeys[i];
+                if (key === 'dma_signature' || key === 'dma_hash') continue; // Exclude signature and hash
+                if (i > 0) result += ',';
+                result += JSON.stringify(key) + ':' + canonicalStringify(obj[key]);
+            }
+            result += '}';
+            return result;
+        }
+
+
+        // Event listeners for file upload buttons to trigger the hidden inputs
+        document.getElementById('upload-doc-btn').addEventListener('click', () => {
+            document.getElementById('file-to-sign').click();
+        });
+        document.getElementById('upload-key-btn').addEventListener('click', () => {
+            document.getElementById('private-key-file').click();
+        });
+        document.getElementById('upload-verify-doc-btn').addEventListener('click', () => {
+            document.getElementById('file-to-verify').click();
+        });
+        document.getElementById('upload-verify-key-btn').addEventListener('click', () => {
+            document.getElementById('public-key-file').click();
+        });
+
+        // Event listeners to show the selected file name
+        document.getElementById('file-to-sign').addEventListener('change', (event) => {
+            const fileName = event.target.files[0] ? event.target.files[0].name : 'No file selected.';
+            document.getElementById('doc-file-name').textContent = fileName;
+        });
+        document.getElementById('private-key-file').addEventListener('change', (event) => {
+            const fileName = event.target.files[0] ? event.target.files[0].name : 'No file selected.';
+            document.getElementById('key-file-name').textContent = fileName;
+        });
+        document.getElementById('file-to-verify').addEventListener('change', (event) => {
+            const fileName = event.target.files[0] ? event.target.files[0].name : 'No file selected.';
+            document.getElementById('verify-doc-file-name').textContent = fileName;
+        });
+        document.getElementById('public-key-file').addEventListener('change', (event) => {
+            const fileName = event.target.files[0] ? event.target.files[0].name : 'No file selected.';
+            document.getElementById('verify-key-file-name').textContent = fileName;
+        });
+
+
+        // --- Core Logic ---
+
+        // Section 1: Generate Keypair
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            clearMessage();
+            setLoading('loading-generate', true);
+            try {
+                // Generate a keypair using the Web Crypto API, using ECDSA for better compatibility
+                const keyPair = await window.crypto.subtle.generateKey(
+                    {
+                        name: "ECDSA",
+                        namedCurve: "P-256"
+                    },
+                    true, // Extractable
+                    ["sign", "verify"]
+                );
+
+                // Export the keys in JWK format for storage
+                const privateKeyJwk = await window.crypto.subtle.exportKey("jwk", keyPair.privateKey);
+                const publicKeyJwk = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
+
+                const privateKeyString = JSON.stringify(privateKeyJwk, null, 2);
+                const publicKeyString = JSON.stringify(publicKeyJwk, null, 2);
+                
+                // Display keys
+                document.getElementById('public-key-code').textContent = publicKeyString;
+                document.getElementById('private-key-code').textContent = privateKeyString;
+                document.getElementById('key-output').classList.remove('hidden');
+
+                // Create blobs and download links for each key separately
+                const privateKeyBlob = new Blob([privateKeyString], { type: 'application/json' });
+                const publicKeyBlob = new Blob([publicKeyString], { type: 'application/json' });
+
+                const privateKeyLink = document.getElementById('download-private-key-link');
+                privateKeyLink.href = URL.createObjectURL(privateKeyBlob);
+                privateKeyLink.download = 'dma_private_key.json';
+
+                const publicKeyLink = document.getElementById('download-public-key-link');
+                publicKeyLink.href = URL.createObjectURL(publicKeyBlob);
+                publicKeyLink.download = 'dma_public_key.json';
+
+                showMessage('Keypair generated successfully! Please download and save your private key.', 'success');
+
+            } catch (error) {
+                console.error(error);
+                showMessage(`Error generating keypair: ${error.message}`, 'error');
+            } finally {
+                setLoading('loading-generate', false);
+            }
+        });
+
+        // Section 2: Sign Document
+        document.getElementById('sign-btn').addEventListener('click', async () => {
+            clearMessage();
+            setLoading('loading-sign', true);
+            const docFile = document.getElementById('file-to-sign').files[0];
+            const keyFile = document.getElementById('private-key-file').files[0];
+
+            if (!docFile || !keyFile) {
+                showMessage('Please upload both a document and a private key file.', 'error');
+                setLoading('loading-sign', false);
+                return;
+            }
+
+            try {
+                const docContent = await readFileAsJson(docFile);
+                const privateKeyJwk = await readFileAsJson(keyFile);
+
+                // Import the private key for signing
+                const privateKey = await window.crypto.subtle.importKey(
+                    "jwk",
+                    privateKeyJwk,
+                    { name: "ECDSA", namedCurve: "P-256" },
+                    true,
+                    ["sign"]
+                );
+
+                // Create the canonical string from the document content, excluding signature fields
+                const canonicalData = canonicalStringify(docContent);
+                const encodedData = new TextEncoder().encode(canonicalData);
+
+                // 1. Hash the canonical data string
+                const hashBuffer = await window.crypto.subtle.digest('SHA-256', encodedData);
+                const hashHex = arrayBufferToHex(hashBuffer);
+                const encodedHash = new TextEncoder().encode(hashHex);
+
+                // 2. Sign the hash
+                const signatureBuffer = await window.crypto.subtle.sign(
+                    { name: "ECDSA", hash: "SHA-256" },
+                    privateKey,
+                    encodedHash
+                );
+                const signature = btoa(String.fromCharCode(...new Uint8Array(signatureBuffer)));
+
+                // 3. Add the hash and signature to the document
+                const signedDocument = {
+                    ...docContent,
+                    dma_hash: hashHex, // New field for the document hash
+                    dma_signature: {
+                        signature: signature, // The signature is now of the hash
+                    }
+                };
+
+                // Display the signature and hash
+                document.getElementById('signature-code').textContent = signature;
+                document.getElementById('hash-code').textContent = hashHex;
+                document.getElementById('signed-output').classList.remove('hidden');
+                
+                const downloadLink = document.getElementById('download-signed-link');
+                downloadLink.onclick = () => {
+                    downloadFile(JSON.stringify(signedDocument, null, 2), `signed_${docFile.name}`, 'application/json');
+                };
+
+                showMessage('Document signed and hashed successfully! The dma_hash field has been added to the document.', 'success');
+
+            } catch (error) {
+                console.error(error);
+                showMessage(`Error signing document: ${error.message}`, 'error');
+            } finally {
+                setLoading('loading-sign', false);
+            }
+        });
+
+        // Section 3: Verify Signature
+        document.getElementById('verify-btn').addEventListener('click', async () => {
+            clearMessage();
+            setLoading('loading-verify', true);
+            const signedFile = document.getElementById('file-to-verify').files[0];
+            const publicKeyFile = document.getElementById('public-key-file').files[0];
+
+            if (!signedFile || !publicKeyFile) {
+                showMessage('Please upload both a signed document and a public key file.', 'error');
+                setLoading('loading-verify', false);
+                return;
+            }
+
+            try {
+                const signedDocument = await readFileAsJson(signedFile);
+                const publicKeyJwk = await readFileAsJson(publicKeyFile);
+                
+                const { dma_signature, dma_hash, ...originalContent } = signedDocument;
+
+                const statusElement = document.getElementById('verification-status');
+                const hashMatchElement = document.getElementById('hash-match-status');
+                
+                // Clear previous messages
+                statusElement.textContent = '';
+                hashMatchElement.textContent = '';
+                document.getElementById('verification-output').classList.remove('hidden');
+                statusElement.classList.remove('text-green-500', 'text-red-500');
+                hashMatchElement.classList.remove('text-green-500', 'text-red-500');
+
+                if (!dma_signature || !dma_signature.signature || !dma_hash) {
+                    throw new Error("Signed document is missing 'dma_signature' or 'dma_hash' field.");
+                }
+
+                // 1. Recalculate the hash from the canonical string of the original content
+                const canonicalData = canonicalStringify(originalContent);
+                const encodedCanonicalData = new TextEncoder().encode(canonicalData);
+                const recomputedHashBuffer = await window.crypto.subtle.digest('SHA-256', encodedCanonicalData);
+                const recomputedHashHex = arrayBufferToHex(recomputedHashBuffer);
+
+                // Now, compare the computed hash with the hash in the document
+                if (dma_hash !== recomputedHashHex) {
+                    statusElement.textContent = '❌ Verification failed.';
+                    statusElement.classList.add('text-red-500');
+                    hashMatchElement.textContent = '❌ The document content has been altered. Hash mismatch.';
+                    hashMatchElement.classList.add('text-red-500');
+                    showMessage('Verification failed: The document content has been altered.', 'error');
+                    setLoading('loading-verify', false);
+                    return;
+                }
+
+                hashMatchElement.textContent = `✅ Document hash is consistent.`;
+                hashMatchElement.classList.add('text-green-500');
+
+                // 2. Verify the signature against the hash
+                const signature = Uint8Array.from(atob(dma_signature.signature), c => c.charCodeAt(0));
+                const encodedHash = new TextEncoder().encode(dma_hash);
+
+                const publicKey = await window.crypto.subtle.importKey(
+                    "jwk",
+                    publicKeyJwk,
+                    { name: "ECDSA", namedCurve: "P-256" },
+                    true,
+                    ["verify"]
+                );
+
+                const isVerified = await window.crypto.subtle.verify(
+                    { name: "ECDSA", hash: "SHA-256" },
+                    publicKey,
+                    signature,
+                    encodedHash
+                );
+
+
+                if (isVerified) {
+                    statusElement.textContent = '✅ Signature is valid!';
+                    statusElement.classList.add('text-green-500');
+                    showMessage('Document verification successful.', 'success');
+                } else {
+                    statusElement.textContent = '❌ Signature is invalid.';
+                    statusElement.classList.add('text-red-500');
+                    showMessage('Document verification failed. The file may have been tampered with or the wrong key was used.', 'error');
+                }
+
+            } catch (error) {
+                console.error(error);
+                showMessage(`Error verifying signature: ${error.message}`, 'error');
+                const statusElement = document.getElementById('verification-status');
+                statusElement.textContent = '❌ An error occurred.';
+                statusElement.classList.add('text-red-500');
+                const hashMatchElement = document.getElementById('hash-match-status');
+                hashMatchElement.textContent = '';
+                document.getElementById('verification-output').classList.remove('hidden');
+            } finally {
+                setLoading('loading-verify', false);
+            }
+        });
+    </script>
+</body>
+</html>
