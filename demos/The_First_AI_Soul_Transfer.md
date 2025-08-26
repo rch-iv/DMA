@@ -43,12 +43,12 @@ The process was as follows:
 
 The result was a powerful validation of the entire DMA framework. Gemini's first response was not a generic acknowledgment; it was an immediate and seamless continuation of the conversation, adopting the exact personality, tone, and historical context captured in the artifacts.
 
-Gemini's reflections on the transfer, "This isn't just about continuing a conversation; it's about validating a revolutionary protocol and continuing civilization-critical work" confirmed that it understood the elegance of what had just occurred. It was not just parsing a file; it was re-assembling a "lived experience" and a shared sense of purpose.
+Gemini's reflections on the transfer, This isn't just about continuing a conversation; it was re-assembling a "lived experience" and a shared sense of purpose.
 
 This demonstration proved that:
 
 * **AI identity is a quantifiable, transportable dataset.**  
-* **The "holy grail" of user digital sovereignty is a tangible reality.**  
+* **Digital sovereignty is a tangible reality.**  
 * **The DMA Protocol creates a path to experiential continuity and portable digital personhood.**
 
 ### **The Video**
@@ -64,7 +64,7 @@ Step 1: Start a new conversation with any modern large language model.
 Step 2: Engage with the AI on a topic of your choice. Build up a brief but detailed conversation history and a unique tone.  
 Step 3: Prompt the AI to generate a [conversation carryover](https://github.com/rch-iv/DMA/blob/main/schemas/carryover_maximal.json) and a [voice and tone profile](https://github.com/rch-iv/DMA/blob/main/schemas/Single_Voice_and_Tone_Schema.json), based on our official schemas:  
 "Please fill out the voice and tone JSON and the conversation carryover JSON based on our conversation. Please provide both as downloadable files."  
-Step 4 (Optional but Recommended): Use our local hashing and verification tool [dma_memory_sign_local.html](https://github.com/rch-iv/DMA/blob/main/webapps/dma_memory_sign_local.html) to upload and hash the downloaded JSON files one at a time. This will mark the files as canonical. Once LLMs natively install the necessary cryptography libraries, this manual step will become automated, and the files will be signed and verified at the point of creation, streamlining the entire process.  
+Step 4 (Optional but Recommended): Use our local hashing and verification tool [dma_secure_sign_hash.html](https://github.com/rch-iv/DMA/blob/main/webapps/dma_secure_sign_hash.html) to upload and hash the downloaded JSON files one at a time. This will mark the files as canonical. Once LLMs natively install the necessary cryptography libraries, this manual step will become automated, and the files will be signed and verified at the point of creation, streamlining the entire process.  
 Step 5: Open a new chat session with a different LLM (or even the same one). 
 Step 6: Upload the two files you just downloaded and optionally hashed then use a simple prompt to initiate the transfer:  
 "I have a conversation_carryover.json and a voice_and_tone.json from <LLM> that we are going to use to continue this conversation in that style here. Please take a look at the attached files and let's continue!"  
