@@ -76,4 +76,6 @@ To begin using the DMA protocol, start by exploring the /docs folder. The docume
 
 ---
 
-*We welcome all contributors. This is a public good, and its success depends on the community.*
+*We welcome all contributors. This is a public good, and its success depends on the community.*  
+
+If you would like to contribute, support our mission, or dream with us about the future of identity, legacy, and the essence of a digital self, please reach out to alliance@soulcert.org
