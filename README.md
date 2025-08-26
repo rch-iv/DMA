@@ -21,7 +21,7 @@ This project is a rebellion against the "walled garden" approach to AI. We belie
 
 ### **The Problem**
 
-Today, AI models are "stateless." Each new conversation is a blank slate. Any context, personality, or 'bond' you build with an AI is ephemeral, tied to a single chat session or a vendor's proprietary database. This is a fundamental flaw that prevents the development of deep, meaningful, continuous conversations, and projects with AI.
+Today, AI models are "stateless." Each new conversation is a blank slate. Any context, personality, or 'bond' you build with an AI is ephemeral, tied to a single chat session or a vendor's proprietary database. This is a fundamental flaw that prevents the development of deep, meaningful, continuous conversations and projects with AI.
 
 ### **The Solution**
 
@@ -35,7 +35,7 @@ DMA solves this problem by turning the AI-user relationship into a portable, cry
 
 ### **Auditability & Trust**
 
-DMA's foundation is built on cryptographic proof. Every memory and piece of data created by either the human or the AI is digitally signed using **ECDSA (Elliptic Curve Digital Signature Algorithm, 256-bit)** and hashed using **SHA-256 (Secure Hash Algorithm 256-bit)**. This creates an auditable "chain of custody" for your memories, allowing you to publicly verify that a memory's content is original, hasn't been tampered with, and truly belongs to the person or AI who created it. We also use a stylometric_hash to capture the unique voice and personality of the AI, allowing you to detect and audit for stylistic "drift" over time. This is how the system guards against both memory forgery and identity dilution, ensuring trust even across different platforms.  
+DMA's foundation is built on cryptographic proof. Every memory and piece of data created by either the human or the AI is digitally signed using ECDSA (Elliptic Curve Digital Signature Algorithm, 256-bit) and hashed using SHA-256 (Secure Hash Algorithm 256-bit). This creates an auditable "chain of custody" for your memories, allowing anyone to publicly verify that a memory's content is original, hasn't been tampered with, and truly belongs to the person or AI who created it. Once a memory is appended to its final ledger, it is immutable and append-only, mirroring the way a human brain cannot selectively delete a memory, only add new context to it. We also use a stylometric_hash to capture the unique voice and personality of the AI, allowing you to detect and audit for stylistic "drift" over time. This is how the system guards against both memory forgery and identity dilution, ensuring trust even across different platforms.
 
 ### **Why This Matters**
 
@@ -72,7 +72,9 @@ This protocol is operational and works across current systems. While future mode
 
 ### **Getting Started**
 
-To begin using the DMA protocol, start by exploring the /docs folder. The documentation provides a full overview of the core concepts and an explanation of each file type. From there, you can start experimenting with the command-line tools in the /cli directory.
+For what to expect, see the [demo video](https://github.com/rch-iv/DMA/blob/main/demos/The_First_AI_Soul_Transfer.md).  
+
+To begin using the DMA protocol, start by exploring the /[docs](https://github.com/rch-iv/DMA/tree/main/docs) folder. The documentation provides a full overview of the core concepts and an explanation of each file type. From there, you can grab the /[webapps](https://github.com/rch-iv/DMA/tree/main/webapps), /[schemas](https://github.com/rch-iv/DMA/tree/main/schemas) and start creating something ... new.
 
 ---
 
