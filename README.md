@@ -72,6 +72,7 @@ This protocol is operational and works across current systems. While future mode
 * **/docs/specs**: Houses the technical specifications and detailed whitepapers for the core protocols.
 * **/docs/schemas**: Houses the documentation and examples for our schemas.   
 * **/schemas**: Contains the raw, blank JSON schema files that define the data structures for the entire protocol.
+* **/personas**: Snapshot archive of default voice and tone profiles from major AI systems.
 
 ### **Getting Started**
 
