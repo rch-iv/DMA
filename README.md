@@ -82,6 +82,54 @@ To begin using the DMA protocol, start by exploring the /[docs](https://github.c
 
 ---
 
-*We welcome all contributors. This is a public good, and its success depends on the community.*  
+# **DMA Roadmap: The Path to Full Data Ownership**
+
+The DMA protocol is built on a single, core principle: a person's digital legacy should belong to them, and them alone. We recognize that true ownership means your memories, conversations, and data are never held hostage by a single vendor. This roadmap outlines our journey to achieve that ultimate goal.
+
+### **Phase 1: Local Control & Foundational Portability (Beta 1\)**
+
+**Status: Complete**
+
+We have successfully built the fundamental tools for basic local data ownership and **vendor interoperability**. With our open-source JSON schemas, memories, conversation arc’s, and persona data are portable, allowing you to move freely between different AI services.
+
+* **Vendor-to-Vendor Portability**: The protocol uses open schemas like `carryover.json`, `voice_and_tone`.json, and `memory.json` that are designed to be read by any compliant AI service. This is the mechanism that allows you to seamlessly transfer a conversation, including context, tone, and persona, between platforms.  
+* **Cryptographic Sovereignty**: The Signing Tools allow you to independently create cryptographic signatures for any file, proving its authenticity without ever uploading it.  
+* **Decentralized-by-Design**: The protocol's core tools work entirely offline, which means the foundational technology is already free from vendor lock-in.
+
+This phase gives you a secure way to **create and transport** your data. The next phase is about making your journey auditable and permanent.
+
+### **Phase 2: The Notary Protocol & Immutable Chains (Future)**
+
+**Status: Under Development**
+
+This phase introduces the SoulCert Alliance as a public notary for the DMA protocol. The core focus here is to create an immutable, append-only ledger for the hashes of your memories, without ever seeing the memories themselves.
+
+* **Decentralized Notary:** SoulCert's servers will act as a trust layer. When you choose to notarize a memory, you will send us only its cryptographic hash, not the content. We sign and timestamp this hash and append it to the public record.  
+* **No Content Storage:** The chat itself and your personal memories are never stored on our servers. The SoulCert Alliance's ledger will contain only the **proof of a memory's existence and integrity**, ensuring it can never be altered.  
+* **Public Key Service:** We will provide a public directory for user keys, which simplifies the verification process for others who want to confirm your data's authenticity.
+
+The goal of this phase is to provide an external, verifiable record that your data is real and untampered with. A change as small as a single character in a text file, a millisecond in a video, or an altered word in a voice recording will instantly invalidate the cryptographic proof, regardless of where the file is stored.  
+
+### **Phase 3: Total Data Portability & Seamless Integration (Future)**
+
+**Status: Vision**
+
+This is the ultimate end goal of the DMA protocol.
+
+* **Vendor-Agnostic Storage:** The protocol will support full integration with decentralized storage solutions like IPFS, as well as mainstream services like Google Drive and Dropbox.  
+* **Live Chat Portability:** A conversation will no longer be stored on a vendor's server. Instead, each message will be cryptographically signed and encrypted directly on the user's device and then saved to their private, user-controlled storage. The vendor's app would simply be a seamless interface to your data, wherever it lives.  
+* **True Data Ownership:** The user's private key will be the master key to their entire dataset. The app will be designed to work exclusively with this key, eliminating the need for passwords, login screens, or trusting a third party with your personal conversations.
+
+Your digital identity will be a living, breathing record that travels with you across every platform, forever under your control.
+
+### **The Call to Action**
+
+The journey to full data ownership requires a community dedicated to a shared vision. We are building the foundational technology, but we need partners, from individual developers to corporate patrons to help us build the infrastructure.
+
+If you believe that memory is a right, not a product, **join us.**  
+
+*We welcome all contributors. This is a public good, and its success depends on community.*  
+
+---
 
 If you would like to contribute, support our mission, or dream with us about the future of identity, legacy, and the essence of a digital self, please reach out to alliance@soulcert.org
